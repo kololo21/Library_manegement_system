@@ -5,18 +5,15 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import model.Book;
 import service.BookService;
-import service.LoanService;
 import ui.dialog.BookFormDialog;
 
 public class BookPanel extends JPanel {
     private BookService bs;
-    private LoanService ls;
     private JTable table;
     private DefaultTableModel model;//data manegement tool
 
-    public BookPanel(BookService bs,LoanService ls) {
+    public BookPanel(BookService bs) {
         this.bs = bs;
-        this.ls = ls;
         //data is gotten from bs.getBooks()
         //DefaultTableModel will manage the data from the table
         String[] columns = {"ID", "Title", "Author", "Genre", "Total", "Lent", "Available"};
