@@ -19,7 +19,7 @@ public class MainFrame extends JFrame{
         setSize(800,600);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Dashboard",new DashboardPanel(bs,ms,ls));
-        tabs.addTab("Books",new BookPanel(bs));
+        tabs.addTab("Books",new BookPanel(bs,ls,ms));
         tabs.addTab("Members",new MemberPanel(ms));
         tabs.addTab("Loan History",new LoanHistoryPanel(ls));
         add(tabs);

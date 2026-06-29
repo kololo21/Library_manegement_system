@@ -5,15 +5,23 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import model.Book;
 import service.BookService;
+import service.LoanService;
+import service.MemberService;
 import ui.dialog.BookFormDialog;
+import ui.dialog.LendDialog;
 
 public class BookPanel extends JPanel {
     private BookService bs;
+    private LoanService ls;
+    private MemberService ms;
+
     private JTable table;
     private DefaultTableModel model;//data manegement tool
 
-    public BookPanel(BookService bs) {
+    public BookPanel(BookService bs,LoanService ls,MemberService ms) {
         this.bs = bs;
+        this.ls=ls;
+        this.ms=ms;
         //data is gotten from bs.getBooks()
         //DefaultTableModel will manage the data from the table
         String[] columns = {"ID", "Title", "Author", "Genre", "Total", "Lent", "Available"};
@@ -66,10 +74,34 @@ public class BookPanel extends JPanel {
             }
             
         });
+        JButton lendButton = new JButton("Lend");
+        lendButton.addActionListener(e->{
+            //event process when click on
+            int row = table.getSelectedRow();
+            if(row == -1){
+                JOptionPane.showMessageDialog(this, "Please select a book to lend");
+                return;
+            }
+            int result = JOptionPane.showConfirmDialog(this, "lend this","Confirm",JOptionPane.YES_NO_OPTION);
+            if(result == JOptionPane.YES_OPTION){
+                //Process for Yes
+                String bookID=(String)model.getValueAt(row, 0);//get value at the particular point
+                Book book = bs.findByID(bookID);
+                if(!book.isAvailable()){
+                    JOptionPane.showMessageDialog(this, "This book is not available");
+                    return;
+                }
+                JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(this);
+                new LendDialog(parent,ms,ls,bookID);
+                refreshTable();
+            }
+            
+        });
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(lendButton);
         add(buttonPanel,BorderLayout.SOUTH);
     }
     public void refreshTable(){
