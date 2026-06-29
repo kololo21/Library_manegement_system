@@ -18,7 +18,8 @@ public class MainFrame extends JFrame{
         setTitle("Library Management System");
         setSize(800,600);
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Dashboard",new DashboardPanel(bs,ms,ls));
+        DashboardPanel dashboardPanel = new DashboardPanel(bs, ms, ls);
+        tabs.addTab("Dashboard",dashboardPanel);
         BookPanel bookPanel = new BookPanel(bs, ls, ms);
         tabs.addTab("Books",bookPanel);
         tabs.addTab("Members",new MemberPanel(ms));
@@ -26,6 +27,7 @@ public class MainFrame extends JFrame{
         tabs.addTab("Loan History",loanHistoryPanel);
         tabs.addChangeListener(e->{
             int index = tabs.getSelectedIndex();
+            if(index==0)dashboardPanel.refreshTable();
             if (index == 1) { // Books タブ
                 bookPanel.refreshTable();
             }
