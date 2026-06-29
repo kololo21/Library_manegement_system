@@ -1,7 +1,12 @@
 package ui;
 
 import ui.panel.*;
+
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import service.BookService;
@@ -18,6 +23,7 @@ public class MainFrame extends JFrame{
         tabs.addTab("Members",new MemberPanel(ms,ls));
         tabs.addTab("Loan History",new LoanHistoryPanel(ls));
         add(tabs);
+       
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
