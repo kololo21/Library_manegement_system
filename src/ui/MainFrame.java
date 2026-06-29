@@ -19,9 +19,20 @@ public class MainFrame extends JFrame{
         setSize(800,600);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Dashboard",new DashboardPanel(bs,ms,ls));
-        tabs.addTab("Books",new BookPanel(bs,ls,ms));
+        BookPanel bookPanel = new BookPanel(bs, ls, ms);
+        tabs.addTab("Books",bookPanel);
         tabs.addTab("Members",new MemberPanel(ms));
-        tabs.addTab("Loan History",new LoanHistoryPanel(ls));
+        LoanHistoryPanel loanHistoryPanel = new LoanHistoryPanel(ls,ms);
+        tabs.addTab("Loan History",loanHistoryPanel);
+        tabs.addChangeListener(e->{
+            int index = tabs.getSelectedIndex();
+            if (index == 1) { // Books タブ
+                bookPanel.refreshTable();
+            }
+            if(index ==3){ //(start from 0) Loan history tab
+                loanHistoryPanel.refreshTable();
+            }
+        });
         add(tabs);
        
 
