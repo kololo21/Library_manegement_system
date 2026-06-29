@@ -1,6 +1,8 @@
 package ui;
 
+import ui.panel.*;
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
 import service.BookService;
 import service.LoanService;
@@ -10,7 +12,15 @@ public class MainFrame extends JFrame{
     public MainFrame(BookService bs,MemberService ms,LoanService ls){
         setTitle("Library Management System");
         setSize(800,600);
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Dashboard",new DashboardPanel(bs,ms,ls));
+        tabs.addTab("Books",new BookPanel(bs,ls));
+        tabs.addTab("Members",new MemberPanel(ms,ls));
+        tabs.addTab("Loan History",new LoanHistoryPanel(ls));
+        add(tabs);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        
     }
 }
