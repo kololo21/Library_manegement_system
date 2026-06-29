@@ -3,10 +3,12 @@ package ui.panel;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import javax.swing.SwingUtilities;
 import java.util.List;
 import model.Book;
 import service.BookService;
 import service.LoanService;
+import ui.dialog.BookFormDialog;
 
 public class BookPanel extends JPanel {
     private BookService bs;
@@ -32,7 +34,11 @@ public class BookPanel extends JPanel {
         JButton addButton = new JButton("Add Book");
         addButton.addActionListener(e->{
             //event process when click on
-            System.out.println("Add clicked");
+
+            //get JFrame(Main Frame) which is a base of BookPanel
+            JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(this);
+            new BookFormDialog(parent, bs);
+            refreshTable();
         });
         JButton editButton = new JButton("Edit Book");
         editButton.addActionListener(e->{
