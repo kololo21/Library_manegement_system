@@ -3,8 +3,6 @@ package ui.panel;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import javax.swing.SwingUtilities;
-import java.util.List;
 import model.Book;
 import service.BookService;
 import service.LoanService;
@@ -14,7 +12,7 @@ public class BookPanel extends JPanel {
     private BookService bs;
     private LoanService ls;
     private JTable table;
-    private DefaultTableModel model;
+    private DefaultTableModel model;//data manegement tool
 
     public BookPanel(BookService bs,LoanService ls) {
         this.bs = bs;
@@ -37,18 +35,39 @@ public class BookPanel extends JPanel {
 
             //get JFrame(Main Frame) which is a base of BookPanel
             JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(this);
-            new BookFormDialog(parent, bs);
+            new BookFormDialog(parent, bs,null);
             refreshTable();
         });
         JButton editButton = new JButton("Edit Book");
         editButton.addActionListener(e->{
             //event process when click on
-            System.out.println("Edit clicked");
+            int row = table.getSelectedRow();
+            if(row == -1){
+                JOptionPane.showMessageDialog(this, "Please select a book to edit");
+                return;
+            }
+            String bookID=(String)model.getValueAt(row, 0);//get value at the particular point
+            Book book = bs.findByID(bookID);
+            JFrame parent =(JFrame)SwingUtilities.getWindowAncestor(this);
+            new BookFormDialog(parent,bs, book);//give book (editor mode)
+            refreshTable();
         });
         JButton deleteButton = new JButton("Delete Book");
         deleteButton.addActionListener(e->{
             //event process when click on
-            System.out.println("Delete clicked");
+            int row = table.getSelectedRow();
+            if(row == -1){
+                JOptionPane.showMessageDialog(this, "Please select a book to delete");
+                return;
+            }
+            int result = JOptionPane.showConfirmDialog(this, "Delete this","Confirm",JOptionPane.YES_NO_OPTION);
+            if(result == JOptionPane.YES_OPTION){
+                //Process for Yes
+                String bookID=(String)model.getValueAt(row, 0);//get value at the particular point
+                bs.deleteBook(bookID);
+                refreshTable();
+            }
+            
         });
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(addButton);
