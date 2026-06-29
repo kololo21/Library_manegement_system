@@ -35,16 +35,14 @@ public class BookPanel extends JPanel {
             System.out.println("Add clicked");
         });
         JButton editButton = new JButton("Edit Book");
-        addButton.addActionListener(e->{
+        editButton.addActionListener(e->{
             //event process when click on
             System.out.println("Edit clicked");
-
         });
         JButton deleteButton = new JButton("Delete Book");
-        addButton.addActionListener(e->{
+        deleteButton.addActionListener(e->{
             //event process when click on
             System.out.println("Delete clicked");
-
         });
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(addButton);
