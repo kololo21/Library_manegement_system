@@ -1,24 +1,32 @@
 package ui.panel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.List;
+
 import javax.swing.table.DefaultTableModel;
 
 import javax.swing.*;
 
+import model.Book;
 import model.LoanRecord;
 import model.LoanStatus;
 import service.BookService;
 import service.LoanService;
 import service.MemberService;
+import service.RecommondationService;
 
 
 public class DashboardPanel extends JPanel {
     private DefaultTableModel model;
-    private BookService bs;
+    private RecommondationService rs;
     private MemberService ms;
     private LoanService ls;
+    private JLabel recommendLabel1 = new JLabel("-");
+    private JLabel recommendLabel2 = new JLabel("-");
+    private JLabel recommendLabel3 = new JLabel("-");
+
     public DashboardPanel(BookService bs,MemberService ms,LoanService ls) {
-        this.bs=bs;
+        this.rs = new RecommondationService(bs, ls);
         this.ms=ms;
         this.ls=ls;
 
@@ -37,8 +45,23 @@ public class DashboardPanel extends JPanel {
 
         JTable table = new JTable(model);
         JScrollPane scroll = new JScrollPane(table);
-        add(scroll,BorderLayout.CENTER);
+        
+
+        //Recommand
+        JPanel recommandPanel = new JPanel(new GridLayout(4,1));
+        recommandPanel.add(new JLabel("---Top 3 Pupular Books---"));
+        recommandPanel.add(recommendLabel1);
+        recommandPanel.add(recommendLabel2);
+        recommandPanel.add(recommendLabel3);
+
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(scroll,BorderLayout.NORTH);
+        centerPanel.add(recommandPanel,BorderLayout.CENTER);
+        add(centerPanel,BorderLayout.CENTER);
+        
         refreshTable();
+        refreshDashboard();
+
     }
     public void refreshTable(){
         model.setRowCount(0); //all lines clear
@@ -54,6 +77,13 @@ public class DashboardPanel extends JPanel {
             }
             
         }
+    }
+    public void refreshDashboard(){
+        List<Book> topBooks=rs.getTopBooks();
+        recommendLabel1.setText(topBooks.size()>0?topBooks.get(0).getTitle():"-");
+        recommendLabel2.setText(topBooks.size()>1?topBooks.get(1).getTitle():"-");
+        recommendLabel3.setText(topBooks.size()>2?topBooks.get(2).getTitle():"-");
+
     }
 }
 
