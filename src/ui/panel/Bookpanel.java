@@ -127,9 +127,6 @@ public class BookPanel extends JPanel {
         add(searchPanel,BorderLayout.NORTH);
 
 
-
-
-
     }
 
     public void filterTable(){
@@ -139,7 +136,8 @@ public class BookPanel extends JPanel {
         for(Book book:bs.getBooks()){
             if(book.getTitle().toLowerCase().contains(keyword)||
             book.getAuthor().toLowerCase().contains(keyword)||
-            book.getGenre().toLowerCase().contains(keyword)){
+            book.getGenre().toLowerCase().contains(keyword)||
+            book.getBookID().toLowerCase().contains(keyword)){
                 model.addRow(new Object[]{
                     book.getBookID(),
                     book.getTitle(),

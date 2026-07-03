@@ -2,7 +2,11 @@ package ui.panel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+
+import model.Book;
 import model.Member;
 import service.MemberService;
 import ui.dialog.MemberFormDialog;
@@ -11,6 +15,8 @@ public class MemberPanel extends JPanel {
     private MemberService ms;
     private JTable table;
     private DefaultTableModel model;//data manegement tool
+    private JTextField searchField;
+
 
     public MemberPanel(MemberService ms) {
         this.ms = ms;
@@ -71,7 +77,48 @@ public class MemberPanel extends JPanel {
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         add(buttonPanel,BorderLayout.SOUTH);
+        
+        //Searching Bar
+        searchField=new JTextField(20);
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            //when word is append
+            public void insertUpdate(DocumentEvent e){filterTable();}
+            //when word is removed
+            public void removeUpdate(DocumentEvent e){filterTable();}
+            //when style is changed
+            public void changedUpdate(DocumentEvent e){filterTable();}
+
+        });
+
+        JPanel searchPanel = new JPanel(new FlowLayout());
+        searchPanel.add(new JLabel("Search:"));
+        searchPanel.add(searchField);
+        add(searchPanel,BorderLayout.NORTH);
+
     }
+
+
+    public void filterTable(){
+        String keyword = searchField.getText().toLowerCase(); //convert all input to lower case
+        model.setRowCount(0);//Table clear
+
+        for(Member member:ms.getMembers()){
+            if(member.getName().toLowerCase().contains(keyword)||
+            member.getEmail().toLowerCase().contains(keyword)||
+            member.getPhone().toLowerCase().contains(keyword)||
+            member.getMemberID().toLowerCase().contains(keyword)){
+                model.addRow(new Object[]{
+                     member.getMemberID(),
+                        member.getName(),
+                        member.getEmail(),
+                        member.getPhone(),
+                });
+            }
+
+        }
+    }
+
+
     public void refreshTable(){
         model.setRowCount(0); //all lines clear
         for (Member member:ms.getMembers()){
