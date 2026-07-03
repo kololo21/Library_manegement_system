@@ -3,7 +3,6 @@ package ui.dialog;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import model.Book;
 import model.Member;
 import service.LoanService;
 import service.MemberService;
@@ -11,9 +10,7 @@ import service.MemberService;
 
 public class LendDialog extends JDialog{
     private JList<String> memberList;
-    private MemberService ms;
-    private LoanService ls;
-    private String bookID;
+
 
     public LendDialog(JFrame parent,MemberService ms,LoanService ls,String bookID){
 

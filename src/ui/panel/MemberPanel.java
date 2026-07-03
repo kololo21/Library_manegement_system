@@ -6,7 +6,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 
-import model.Book;
 import model.Member;
 import service.MemberService;
 import ui.dialog.MemberFormDialog;

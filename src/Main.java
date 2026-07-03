@@ -1,8 +1,6 @@
 
 import javax.swing.SwingUtilities;
 import data.DataManager;
-import model.Book;
-import model.Member;
 import service.*;
 import ui.MainFrame;
 

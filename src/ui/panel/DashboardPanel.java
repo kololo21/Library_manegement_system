@@ -49,14 +49,29 @@ public class DashboardPanel extends JPanel {
 
         //Recommand
         JPanel recommandPanel = new JPanel(new GridLayout(4,1));
-        recommandPanel.add(new JLabel("---Top 3 Pupular Books---"));
-        recommandPanel.add(recommendLabel1);
-        recommandPanel.add(recommendLabel2);
-        recommandPanel.add(recommendLabel3);
+        recommandPanel.add(new JLabel("---Top 3 Pupular Books---"),BorderLayout.CENTER);
+        recommandPanel.add(recommendLabel1,BorderLayout.CENTER);
+        recommandPanel.add(recommendLabel2,BorderLayout.CENTER);
+        recommandPanel.add(recommendLabel3,BorderLayout.CENTER);
 
+        //Quit Button
+        JButton quitButton = new JButton("Quit");
+        quitButton.addActionListener(e->{
+            //event process when click on
+ 
+            int result = JOptionPane.showConfirmDialog(this, "Quit","Confirm",JOptionPane.YES_NO_OPTION);
+            if(result == JOptionPane.YES_OPTION){
+                //Process for Yes
+                System.exit(0);
+            }
+        });
+        
+
+        //Center Panel(scroll,Recommand,Quit)
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(scroll,BorderLayout.NORTH);
         centerPanel.add(recommandPanel,BorderLayout.CENTER);
+        centerPanel.add(quitButton,BorderLayout.EAST);
         add(centerPanel,BorderLayout.CENTER);
         
         refreshTable();
