@@ -7,18 +7,21 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 import model.Member;
+import service.LoanService;
 import service.MemberService;
 import ui.dialog.MemberFormDialog;
 
 public class MemberPanel extends JPanel {
     private MemberService ms;
+    private LoanService ls;
     private JTable table;
     private DefaultTableModel model;//data manegement tool
     private JTextField searchField;
 
 
-    public MemberPanel(MemberService ms) {
+    public MemberPanel(MemberService ms,LoanService ls) {
         this.ms = ms;
+        this.ls=ls;
         //data is gotten from bs.getmembers()
         //DefaultTableModel will manage the data from the table
         String[] columns = {"ID", "Name", "Email","Phone"};
@@ -66,6 +69,11 @@ public class MemberPanel extends JPanel {
             if(result == JOptionPane.YES_OPTION){
                 //Process for Yes
                 String memberID=(String)model.getValueAt(row, 0);//get value at the particular point
+                boolean lent = ls.getActiveLoans().stream().anyMatch(l->l.getMemberID().equals(memberID));
+                if(lent){
+                    JOptionPane.showMessageDialog(this, "This member has active loans and cannot be deleted");
+                    return;
+                }
                 ms.deleteMember(memberID);
                 refreshTable();
             }

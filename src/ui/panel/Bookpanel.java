@@ -18,7 +18,6 @@ public class BookPanel extends JPanel {
     private LoanService ls;
     private MemberService ms;
     private JTextField searchField;
-
     private JTable table;
     private DefaultTableModel model;//data manegement tool
 
@@ -69,10 +68,17 @@ public class BookPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Please select a book to delete");
                 return;
             }
+            
+
             int result = JOptionPane.showConfirmDialog(this, "Delete this","Confirm",JOptionPane.YES_NO_OPTION);
             if(result == JOptionPane.YES_OPTION){
                 //Process for Yes
                 String bookID=(String)model.getValueAt(row, 0);//get value at the particular point
+                boolean lent = ls.getActiveLoans().stream().anyMatch(l->l.getBookID().equals(bookID));
+                if(lent){
+                    JOptionPane.showMessageDialog(this, "This book is currently lent and cannot be deleted");
+                    return;
+                }
                 bs.deleteBook(bookID);
                 refreshTable();
             }

@@ -8,6 +8,8 @@ import service.BookService;
 import service.LoanService;
 import service.MemberService;
 
+import javax.swing.Timer;
+
 public class MainFrame extends JFrame{
     public MainFrame(BookService bs,MemberService ms,LoanService ls){
         setTitle("Library Management System");
@@ -17,13 +19,13 @@ public class MainFrame extends JFrame{
         tabs.addTab("Dashboard",dashboardPanel);
         BookPanel bookPanel = new BookPanel(bs, ls, ms);
         tabs.addTab("Books",bookPanel);
-        tabs.addTab("Members",new MemberPanel(ms));
+        tabs.addTab("Members",new MemberPanel(ms,ls));
         LoanHistoryPanel loanHistoryPanel = new LoanHistoryPanel(ls,ms);
         tabs.addTab("Loan History",loanHistoryPanel);
         tabs.addChangeListener(e->{
             int index = tabs.getSelectedIndex();
             if(index==0)dashboardPanel.refreshTable();
-            if (index == 1) { // Books タブ
+            if (index == 1) { // Books tab
                 bookPanel.refreshTable();
             }
             if(index ==3){ //(start from 0) Loan history tab
@@ -31,7 +33,8 @@ public class MainFrame extends JFrame{
             }
         });
         add(tabs);
-       
+        
+            
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);

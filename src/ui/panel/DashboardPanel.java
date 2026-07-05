@@ -4,10 +4,13 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
-
+import java.awt.Font;
 import javax.swing.*;
+import java.awt.Component;
+import java.awt.FlowLayout;
 
 import model.Book;
+import model.Member;
 import model.LoanRecord;
 import model.LoanStatus;
 import service.BookService;
@@ -21,24 +24,35 @@ public class DashboardPanel extends JPanel {
     private RecommondationService rs;
     private MemberService ms;
     private LoanService ls;
-    private JLabel recommendLabel1 = new JLabel("-");
-    private JLabel recommendLabel2 = new JLabel("-");
-    private JLabel recommendLabel3 = new JLabel("-");
+    private BookService bs;
+    private JLabel totalBooksLabel;
+    private JLabel totalMembersLabel;
+    private JLabel activeLoansLabel;
+    private JLabel overdueLabel;
+    private JLabel recommendLabel1 = new JLabel("-",JLabel.CENTER);
+    private JLabel recommendLabel2 = new JLabel("-",JLabel.CENTER);
+    private JLabel recommendLabel3 = new JLabel("-",JLabel.CENTER);
 
     public DashboardPanel(BookService bs,MemberService ms,LoanService ls) {
         this.rs = new RecommondationService(bs, ls);
         this.ms=ms;
         this.ls=ls;
+        this.bs=bs;
 
         setLayout((new BorderLayout()));
         JPanel statsJPanel = new JPanel(new GridLayout(2,2));
 
-        statsJPanel.add(new JLabel("Total Books:"+bs.getBooks().size()));   // statsics at top
-        statsJPanel.add(new JLabel("Total Members:"+ms.getMembers().size()));   // statsics at top
-        statsJPanel.add(new JLabel("Active Loans:"+ls.getActiveLoans().size()));   // statsics at top
+        totalBooksLabel=new JLabel("Total Books:"+bs.getBooks().size());
+        statsJPanel.add(totalBooksLabel);   // statsics at top
+        totalMembersLabel=new JLabel("Total Members:"+ms.getMembers().size());
+        statsJPanel.add(totalMembersLabel);   // statsics at top
+        activeLoansLabel=new JLabel("Active Loans:"+ls.getActiveLoans().size());
+        statsJPanel.add(activeLoansLabel);   // statsics at top
         long overdueCount = ls.getActiveLoans().stream().filter(loan->loan.getStatus() == LoanStatus.OVERDUE).count();
-        statsJPanel.add(new JLabel("Overdue"+overdueCount));   // statics at top
+        overdueLabel=new JLabel("Overdue:"+overdueCount);
+        statsJPanel.add(overdueLabel);   // statics at top
         add(statsJPanel,BorderLayout.NORTH);
+
         //model
         String[] columns = {"LoanID", "BookID", "MemberName", "Due Date"};
         model = new DefaultTableModel(columns, 0);
@@ -48,11 +62,19 @@ public class DashboardPanel extends JPanel {
         
 
         //Recommand
-        JPanel recommandPanel = new JPanel(new GridLayout(4,1));
-        recommandPanel.add(new JLabel("---Top 3 Pupular Books---"),BorderLayout.CENTER);
-        recommandPanel.add(recommendLabel1,BorderLayout.CENTER);
-        recommandPanel.add(recommendLabel2,BorderLayout.CENTER);
-        recommandPanel.add(recommendLabel3,BorderLayout.CENTER);
+        JPanel recommandPanel = new JPanel();
+        recommandPanel.setLayout(new BoxLayout(recommandPanel, BoxLayout.Y_AXIS));
+        JLabel recTitle = new JLabel("---Top 3 Pupular Books---",JLabel.CENTER);
+        recTitle.setFont(new Font("Arial",Font.BOLD,16));
+        recTitle.setAlignmentX((Component.CENTER_ALIGNMENT));
+        recommendLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        recommendLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        recommendLabel3.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        recommandPanel.add(recTitle);
+        recommandPanel.add(recommendLabel1);
+        recommandPanel.add(recommendLabel2);
+        recommandPanel.add(recommendLabel3);
 
         //Quit Button
         JButton quitButton = new JButton("Quit");
@@ -66,34 +88,48 @@ public class DashboardPanel extends JPanel {
             }
         });
         
+        //OVERDUE TITLE
+        JLabel overdueTitle = new JLabel("PEOPLE WHO HAVE OVERDUED BOOKS",JLabel.CENTER);
+        //tablePANEL(scroll+overdue)
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(overdueTitle,BorderLayout.NORTH);
+        tablePanel.add(scroll,BorderLayout.CENTER);
 
-        //Center Panel(scroll,Recommand,Quit)
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.add(scroll,BorderLayout.NORTH);
-        centerPanel.add(recommandPanel,BorderLayout.CENTER);
-        centerPanel.add(quitButton,BorderLayout.EAST);
-        add(centerPanel,BorderLayout.CENTER);
-        
+        //Center Panel(Recommand,Quit)
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        centerPanel.add(recommandPanel);
+        centerPanel.add(quitButton);
+        add(tablePanel,BorderLayout.CENTER);
+        add(centerPanel,BorderLayout.SOUTH);
         refreshTable();
-        refreshDashboard();
 
     }
     public void refreshTable(){
+        ls.updateOverdueStatus();
+        
+        //.stream
+        long overdueCount = ls.getActiveLoans().stream().filter(loan->loan.getStatus()==LoanStatus.OVERDUE).count();
+        totalBooksLabel.setText("Total Books:"+bs.getBooks().size());
+        totalMembersLabel.setText("Total Members:"+ms.getMembers().size());
+        activeLoansLabel.setText("Active Loans:"+ls.getActiveLoans().size());
+        overdueLabel.setText("Overdue:"+overdueCount);
         model.setRowCount(0); //all lines clear
-        for (LoanRecord loan:ls.getActiveLoans()){
-            if (loan.getStatus() == LoanStatus.OVERDUE) {
-                model.addRow(new Object[]{
-                    loan.getLoanID(),
-                    loan.getBookID(),
-                    ms.findByID(loan.getMemberID()).getName(),
-                    loan.getDueDate(),
+                for (LoanRecord loan:ls.getActiveLoans()){
+                    if (loan.getStatus() == LoanStatus.OVERDUE) {
+                        Member m = ms.findByID(loan.getMemberID());
+                        String name = (m==null)?"(deleted)":m.getName();
+                        model.addRow(new Object[]{
+                            loan.getLoanID(),
+                            loan.getBookID(),
+                            name,
+                            loan.getDueDate(),
+                            
+                        });
+                    }
                     
-                });
-            }
-            
-        }
-    }
-    public void refreshDashboard(){
+                }
+   
         List<Book> topBooks=rs.getTopBooks();
         recommendLabel1.setText(topBooks.size()>0?topBooks.get(0).getTitle():"-");
         recommendLabel2.setText(topBooks.size()>1?topBooks.get(1).getTitle():"-");

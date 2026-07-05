@@ -22,7 +22,7 @@ public class LoanService{
             return;
         }else{
             LocalDate loanDate = LocalDate.now();
-            LoanRecord record =new LoanRecord("L"+loans.size()+1, bookID, memberID,loanDate);
+            LoanRecord record =new LoanRecord("L"+(loans.size()+1), bookID, memberID,loanDate);
             loans.add(record);
             dm.saveLoans(loans);
             
@@ -61,5 +61,6 @@ public class LoanService{
                 loan.setStatus(LoanStatus.OVERDUE);
             }
         }
+        dm.saveLoans(loans);
     }
 }

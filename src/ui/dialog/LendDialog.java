@@ -40,7 +40,8 @@ public class LendDialog extends JDialog{
                     //event process when click on
                 int index = memberList.getSelectedIndex();
                 if(index==-1){
-                    JOptionPane.showMessageDialog(this, "Select the book to lend");
+                    JOptionPane.showMessageDialog(this, "Select a member to lend to");
+                    return;
                 }
                 String memberID = members.get(index).getMemberID();
                 ls.lendBook(bookID, memberID);

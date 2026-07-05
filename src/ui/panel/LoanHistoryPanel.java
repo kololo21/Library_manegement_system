@@ -4,9 +4,10 @@ import javax.swing.table.DefaultTableModel;
 
 
 import java.awt.*;
-
+import model.Member;
 import model.LoanRecord;
 import service.LoanService;
+
 import service.MemberService;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -66,11 +67,12 @@ public class LoanHistoryPanel extends JPanel {
     public void refreshTable(){
         model.setRowCount(0); //all lines clear
         for (LoanRecord loan:ls.getLoans()){
-
+            Member m = ms.findByID(loan.getMemberID());
+            String name = (m==null)?"(deleted)":m.getName();
             model.addRow(new Object[]{
                 loan.getLoanID(),
                 loan.getBookID(),
-                ms.findByID(loan.getMemberID()).getName(),
+                name,
                 loan.getMemberID(),
                 loan.getLoanDate(),
                 loan.getDueDate(),
@@ -85,14 +87,16 @@ public class LoanHistoryPanel extends JPanel {
         model.setRowCount(0);//Table clear
 
         for(LoanRecord loan:ls.getLoans()){
+            Member m = ms.findByID(loan.getMemberID());
+            String name = (m==null)?"(deleted)":m.getName();
             if(loan.getLoanID().toLowerCase().contains(keyword)||
             loan.getBookID().toLowerCase().contains(keyword)||
             loan.getMemberID().toLowerCase().contains(keyword)||
-            ms.findByID(loan.getMemberID()).getName().toLowerCase().contains(keyword)){
+            name.toLowerCase().contains(keyword)){
                 model.addRow(new Object[]{
                     loan.getLoanID(),
                     loan.getBookID(),
-                    ms.findByID(loan.getMemberID()).getName(),
+                    name,
                     loan.getMemberID(),
                     loan.getLoanDate(),
                     loan.getDueDate(),
