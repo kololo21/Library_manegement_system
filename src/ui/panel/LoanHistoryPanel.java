@@ -65,6 +65,7 @@ public class LoanHistoryPanel extends JPanel {
         
     }
     public void refreshTable(){
+        ls.updateOverdueStatus();
         model.setRowCount(0); //all lines clear
         for (LoanRecord loan:ls.getLoans()){
             Member m = ms.findByID(loan.getMemberID());
@@ -92,7 +93,8 @@ public class LoanHistoryPanel extends JPanel {
             if(loan.getLoanID().toLowerCase().contains(keyword)||
             loan.getBookID().toLowerCase().contains(keyword)||
             loan.getMemberID().toLowerCase().contains(keyword)||
-            name.toLowerCase().contains(keyword)){
+            name.toLowerCase().contains(keyword)||
+            loan.getStatus().toString().toLowerCase().contains(keyword)){
                 model.addRow(new Object[]{
                     loan.getLoanID(),
                     loan.getBookID(),
